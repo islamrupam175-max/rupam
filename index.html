@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="bn" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>জুনিয়র বায়োলজিস্ট কুইজ</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Da+2:wght@400;500;600;700;800&amp;family=Fraunces:wght@600;700;800;900&amp;display=swap" rel="stylesheet">
+  <style>
+  html, body { height: 100%; width: 100%; margin: 0; padding: 0; }
+  body {
+    font-family: 'Baloo Da 2', system-ui, sans-serif;
+    background: linear-gradient(135deg, #e6f7ee 0%, #d4f1e4 40%, #c8e6f0 100%);
+    overflow-x: hidden;
+  }
+  .display-font { font-family: 'Fraunces', serif; letter-spacing: -0.02em; }
+
+  /* Floating microscopic background */
+  .float-bg {
+    position: absolute;
+    opacity: 0.18;
+    animation: drift linear infinite;
+    user-select: none;
+    pointer-events: none;
+    filter: blur(0.3px);
+  }
+  @keyframes drift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    25% { transform: translate(40px, -30px) rotate(90deg); }
+    50% { transform: translate(-20px, -60px) rotate(180deg); }
+    75% { transform: translate(-50px, -20px) rotate(270deg); }
+    100% { transform: translate(0, 0) rotate(360deg); }
+  }
+
+  /* Falling leaves on celebration */
+  .leaf {
+    position: fixed;
+    top: -50px;
+    font-size: 28px;
+    animation: leafFall linear forwards;
+    pointer-events: none;
+    z-index: 50;
+  }
+  @keyframes leafFall {
+    0% { transform: translateY(-10%) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110%) rotate(720deg); opacity: 0.7; }
+  }
+
+  /* Tree grow */
+  .tree-emoji {
+    display: inline-block;
+    transition: transform 0.6s cubic-bezier(.34,1.56,.64,1);
+  }
+  .tree-grow {
+    animation: growPop 0.8s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes growPop {
+    0% { transform: scale(0.5) rotate(-10deg); }
+    50% { transform: scale(1.4) rotate(8deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  /* Option button */
+  .option-btn {
+    transition: all 0.25s ease;
+    border: 2px solid #c8e6d4;
+  }
+  .option-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: #2f9e6b;
+    box-shadow: 0 6px 0 #d4f1e4, 0 10px 20px rgba(47,158,107,0.15);
+  }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-correct {
+    background: #d4f7e2 !important;
+    border-color: #2f9e6b !important;
+    color: #135a3b !important;
+  }
+  .option-wrong {
+    background: #fde2e2 !important;
+    border-color: #d44c4c !important;
+    color: #8a2a2a !important;
+  }
+
+  /* Progress bar */
+  .progress-fill {
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    background: linear-gradient(90deg, #2f9e6b, #4cb8d4);
+  }
+
+  /* Badge shine */
+  .badge-shine {
+    animation: shine 2.5s ease-in-out infinite;
+  }
+  @keyframes shine {
+    0%, 100% { box-shadow: 0 0 30px rgba(47,158,107,0.4), 0 10px 30px rgba(0,0,0,0.15); }
+    50% { box-shadow: 0 0 60px rgba(76,184,212,0.6), 0 10px 40px rgba(0,0,0,0.2); }
+  }
+
+  /* Fade in */
+  .fade-in { animation: fadeIn 0.5s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Level badges */
+  .level-pill {
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .level-pill:hover { transform: translateY(-2px); }
+
+  /* Celebration pulse */
+  .celebrate-pulse { animation: celebratePulse 1s ease-out; }
+  @keyframes celebratePulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  /* Icon spin for DNA */
+  .spin-slow { animation: spinSlow 8s linear infinite; display: inline-block; }
+  @keyframes spinSlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .scroll-container {
+    scrollbar-width: thin;
+    scrollbar-color: #2f9e6b transparent;
+  }
+</style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full w-full">
+  <main class="relative h-full w-full overflow-auto scroll-container"><!-- Floating background emojis -->
+   <div id="floating-bg" class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true"></div>
+   <div class="relative z-10 w-full min-h-full flex items-center justify-center p-4 md:p-8">
+    <div class="w-full max-w-3xl"><!-- ============ START SCREEN ============ -->
+     <section id="start-screen" class="fade-in">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-xl border border-white">
+       <div class="text-center">
+        <div class="text-6xl md:text-7xl mb-4"><span class="inline-block">🔬</span> <span class="inline-block spin-slow">🧬</span> <span class="inline-block">🦠</span>
+        </div>
+        <h1 id="quiz-title" class="display-font text-3xl md:text-5xl font-black mb-3" style="color:#135a3b;">জুনিয়র বায়োলজিস্ট কুইজ</h1>
+        <p id="quiz-subtitle" class="text-base md:text-lg mb-8" style="color:#2f6b55;">কোষ, সালোকসংশ্লেষণ ও প্রাণীজগত — চলো বিজ্ঞানের জগতে যাত্রা শুরু করি 🌿</p><!-- Level selector -->
+        <div class="mb-8">
+         <p class="text-sm font-semibold mb-3" style="color:#2f6b55;">তোমার কঠিনতার স্তর বেছে নাও</p>
+         <div class="grid grid-cols-3 gap-3"><button data-level="easy" class="level-pill bg-white rounded-2xl p-4 border-2 border-[#c8e6d4] hover:border-[#2f9e6b]">
+           <div class="text-3xl mb-1">
+            🌱
+           </div>
+           <div class="font-bold text-sm" style="color:#135a3b;">
+            সহজ
+           </div>
+           <div class="text-xs" style="color:#5a7d6b;">
+            ক্লাস ৬-৭
+           </div></button> <button data-level="medium" class="level-pill bg-white rounded-2xl p-4 border-2 border-[#c8e6d4] hover:border-[#2f9e6b]">
+           <div class="text-3xl mb-1">
+            🌿
+           </div>
+           <div class="font-bold text-sm" style="color:#135a3b;">
+            মাঝারি
+           </div>
+           <div class="text-xs" style="color:#5a7d6b;">
+            ক্লাস ৮
+           </div></button> <button data-level="hard" class="level-pill bg-white rounded-2xl p-4 border-2 border-[#c8e6d4] hover:border-[#2f9e6b]">
+           <div class="text-3xl mb-1">
+            🌳
+           </div>
+           <div class="font-bold text-sm" style="color:#135a3b;">
+            কঠিন
+           </div>
+           <div class="text-xs" style="color:#5a7d6b;">
+            ক্লাস ৯-১০
+           </div></button>
+         </div>
+        </div><button id="start-btn" class="w-full md:w-auto px-10 py-4 rounded-2xl font-bold text-lg text-white shadow-lg transition transform hover:-translate-y-1" style="background:linear-gradient(135deg,#2f9e6b,#4cb8d4);"> <span id="start-button-text">কুইজ শুরু করো 🚀</span> </button>
+        <div class="mt-8 flex items-center justify-center gap-6 text-sm" style="color:#5a7d6b;">
+         <div class="flex items-center gap-2">
+          <span class="text-xl">🌱</span><span>→</span><span class="text-xl">🌿</span><span>→</span><span class="text-xl">🌳</span>
+         </div>
+         <div>
+          সঠিক উত্তরে গাছ বাড়ে!
+         </div>
+        </div>
+       </div>
+      </div>
+     </section><!-- ============ QUIZ SCREEN ============ -->
+     <section id="quiz-screen" class="hidden">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-5 md:p-8 shadow-xl border border-white"><!-- Top bar: progress + tree -->
+       <div class="flex items-center justify-between gap-4 mb-5">
+        <div class="flex-1">
+         <div class="flex items-center justify-between mb-2"><span class="text-xs font-semibold" style="color:#2f6b55;">অগ্রগতি</span> <span id="progress-text" class="text-xs font-bold" style="color:#135a3b;">১ / ৫</span>
+         </div>
+         <div class="h-3 bg-[#e6f3ec] rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full progress-fill rounded-full" style="width: 20%"></div>
+         </div>
+        </div>
+        <div class="flex items-center gap-2 bg-[#e6f7ee] px-4 py-2 rounded-full border-2 border-[#c8e6d4]"><span id="tree-display" class="tree-emoji text-3xl">🌱</span> <span id="score-display" class="font-bold text-sm" style="color:#135a3b;">০</span>
+        </div>
+       </div><!-- Question card -->
+       <div id="question-card" class="fade-in">
+        <div class="flex items-center gap-2 mb-4"><span id="q-emoji" class="text-4xl">🦠</span> <span id="q-level-tag" class="px-3 py-1 rounded-full text-xs font-bold" style="background:#e6f7ee;color:#2f9e6b;">সহজ</span>
+        </div>
+        <h2 id="question-text" class="display-font text-xl md:text-2xl font-bold mb-6 leading-snug" style="color:#135a3b;">প্রশ্ন এখানে আসবে</h2>
+        <div id="options-container" class="grid gap-3"></div>
+        <div id="feedback" class="hidden mt-5 p-4 rounded-2xl text-sm font-medium"></div>
+       </div><!-- Next button -->
+       <div class="mt-6 flex justify-end"><button id="next-btn" class="hidden px-8 py-3 rounded-xl font-bold text-white shadow-md transition hover:-translate-y-0.5" style="background:linear-gradient(135deg,#2f9e6b,#4cb8d4);"> পরবর্তী প্রশ্ন → </button>
+       </div>
+      </div>
+     </section><!-- ============ RESULT SCREEN ============ -->
+     <section id="result-screen" class="hidden">
+      <div class="bg-white/80 backdrop-blur-sm rounded-3xl p-6 md:p-10 shadow-xl border border-white text-center">
+       <div id="final-tree" class="text-7xl md:text-8xl mb-4">
+        🌳
+       </div>
+       <h2 id="completion-message" class="display-font text-2xl md:text-4xl font-black mb-2" style="color:#135a3b;">দারুণ! তুমি কুইজ সম্পন্ন করেছ 🎉</h2>
+       <p class="text-base md:text-lg mb-6" style="color:#2f6b55;">তুমি পেয়েছ <span id="final-score" class="font-black text-2xl" style="color:#2f9e6b;">০</span> / <span id="final-total" class="font-bold">৫</span></p><!-- Badge -->
+       <div class="my-8 flex justify-center">
+        <div class="badge-shine bg-gradient-to-br from-[#2f9e6b] via-[#3aadac] to-[#4cb8d4] rounded-full p-1 inline-block">
+         <div class="bg-white rounded-full px-8 py-6 text-center">
+          <div class="text-5xl mb-2">
+           🔬🧪🧬
+          </div>
+          <div id="badge-title" class="display-font font-black text-lg md:text-xl" style="color:#135a3b;">
+           জুনিয়র বায়োলজিস্ট
+          </div>
+          <div class="text-xs font-semibold mt-1" style="color:#4cb8d4;">
+           ★ অফিসিয়াল ব্যাজ ★
+          </div>
+         </div>
+        </div>
+       </div>
+       <p id="result-feedback" class="text-sm mb-6" style="color:#5a7d6b;">তুমি বিজ্ঞানের পথে এক ধাপ এগিয়ে গেছ! 🌿</p>
+       <div class="flex flex-col md:flex-row gap-3 justify-center"><button id="retry-btn" class="px-8 py-3 rounded-xl font-bold text-white shadow-md transition hover:-translate-y-0.5" style="background:linear-gradient(135deg,#2f9e6b,#4cb8d4);"> 🔄 আবার খেলো </button> <button id="home-btn" class="px-8 py-3 rounded-xl font-bold border-2 transition hover:-translate-y-0.5" style="border-color:#2f9e6b;color:#135a3b;background:white;"> 🏠 হোমে ফেরো </button>
+       </div>
+      </div>
+     </section>
+    </div>
+   </div>
+  </main>
+  <script>
+  // ========== Question Bank ==========
+  const QUESTIONS = {
+    easy: [
+      { emoji: "🦠", q: "কোষের 'শক্তিঘর' নামে পরিচিত অঙ্গাণুটি কোনটি?",
+        options: ["রাইবোজোম", "মাইটোকন্ড্রিয়া", "নিউক্লিয়াস", "গলগি বডি"], correct: 1,
+        explain: "মাইটোকন্ড্রিয়াতে ATP তৈরি হয়, তাই একে কোষের শক্তিঘর বলে। ⚡" },
+      { emoji: "🌱", q: "সালোকসংশ্লেষণের জন্য উদ্ভিদের কী কী প্রয়োজন?",
+        options: ["শুধু পানি", "সূর্যালোক, পানি ও কার্বন ডাইঅক্সাইড", "শুধু মাটি", "অক্সিজেন ও লবণ"], correct: 1,
+        explain: "সূর্যালোক + H₂O + CO₂ → গ্লুকোজ + O₂ 🌞" },
+      { emoji: "🧫", q: "কোন শ্রেণির প্রাণীর মেরুদণ্ড থাকে?",
+        options: ["অমেরুদণ্ডী", "মেরুদণ্ডী", "কীট", "স্পঞ্জ"], correct: 1,
+        explain: "মাছ, ব্যাঙ, পাখি, স্তন্যপায়ী সবই মেরুদণ্ডী প্রাণী। 🐟🦅" },
+      { emoji: "🌿", q: "পাতার কোন অংশে সালোকসংশ্লেষণ ঘটে?",
+        options: ["শিরা", "ক্লোরোপ্লাস্ট", "বৃন্ত", "মূল"], correct: 1,
+        explain: "ক্লোরোপ্লাস্টে ক্লোরোফিল থাকে যা সূর্যালোক শোষণ করে। 🟢" },
+      { emoji: "🧬", q: "DNA কোষের কোথায় থাকে?",
+        options: ["সাইটোপ্লাজম", "নিউক্লিয়াসে", "কোষ ঝিল্লিতে", "লাইসোজোমে"], correct: 1,
+        explain: "ইউক্যারিওটিক কোষে DNA নিউক্লিয়াসের ভিতরে থাকে। 🧬" }
+    ],
+    medium: [
+      { emoji: "🦠", q: "উদ্ভিদ কোষে থাকে কিন্তু প্রাণী কোষে থাকে না — এমন অঙ্গাণু কোনটি?",
+        options: ["মাইটোকন্ড্রিয়া", "কোষ প্রাচীর ও ক্লোরোপ্লাস্ট", "নিউক্লিয়াস", "রাইবোজোম"], correct: 1,
+        explain: "উদ্ভিদ কোষে সেলুলোজের কোষ প্রাচীর ও ক্লোরোপ্লাস্ট থাকে। 🌱" },
+      { emoji: "🌱", q: "সালোকসংশ্লেষণে উৎপন্ন প্রধান গ্যাস কোনটি?",
+        options: ["কার্বন ডাইঅক্সাইড", "অক্সিজেন", "নাইট্রোজেন", "হাইড্রোজেন"], correct: 1,
+        explain: "সালোকসংশ্লেষণ বায়ুমণ্ডলে অক্সিজেন ছেড়ে দেয় — প্রাণের জন্য অপরিহার্য! 🌬️" },
+      { emoji: "🧫", q: "স্তন্যপায়ী প্রাণীদের প্রধান বৈশিষ্ট্য কোনটি?",
+        options: ["ডিম পাড়ে", "লোম ও দুগ্ধ গ্রন্থি থাকে", "ঠান্ডা রক্তের", "ফুলকা দিয়ে শ্বাস নেয়"], correct: 1,
+        explain: "স্তন্যপায়ীদের দেহে লোম থাকে এবং মা দুগ্ধ দিয়ে বাচ্চা পালন করে। 🐅" },
+      { emoji: "🧬", q: "DNA-এর গঠন কেমন?",
+        options: ["একক সূত্র", "দ্বৈত হেলিক্স (Double Helix)", "বৃত্তাকার শুধু", "ত্রিভুজাকার"], correct: 1,
+        explain: "ওয়াটসন ও ক্রিক ১৯৫৩ সালে ডবল হেলিক্স গঠন আবিষ্কার করেন। 🧬" },
+      { emoji: "🦠", q: "ক্লোরোফিল অণু কোন রঙের আলো সবচেয়ে বেশি শোষণ করে?",
+        options: ["সবুজ", "লাল ও নীল", "হলুদ", "বেগুনি সব", ], correct: 1,
+        explain: "ক্লোরোফিল লাল ও নীল আলো শোষণ করে, সবুজ আলো প্রতিফলিত করে — তাই পাতা সবুজ! 💚" }
+    ],
+    hard: [
+      { emoji: "🦠", q: "প্রোক্যারিওটিক ও ইউক্যারিওটিক কোষের প্রধান পার্থক্য কী?",
+        options: ["আকার", "সুগঠিত নিউক্লিয়াসের উপস্থিতি", "রঙ", "চলাচল"], correct: 1,
+        explain: "ইউক্যারিওটে নিউক্লিয়াস ঝিল্লিবদ্ধ; প্রোক্যারিওটে (যেমন ব্যাকটেরিয়া) নয়। 🦠" },
+      { emoji: "🌿", q: "C₄ উদ্ভিদে সালোকসংশ্লেষণের প্রথম স্থির যৌগ কোনটি?",
+        options: ["3-PGA", "অক্সালোঅ্যাসিটিক এসিড (OAA)", "গ্লুকোজ", "পাইরুভেট"], correct: 1,
+        explain: "C₄ চক্রে CO₂ প্রথমে OAA-তে স্থির হয়। যেমন: ভুট্টা, আখ। 🌽" },
+      { emoji: "🧫", q: "কর্ডাটা পর্বের প্রধান বৈশিষ্ট্য কোনটি?",
+        options: ["বহিঃকঙ্কাল", "নটোকর্ড, পৃষ্ঠীয় নার্ভকর্ড, ফ্যারিঞ্জিয়াল ক্লেফট", "রেডিয়াল প্রতিসাম্য", "খণ্ডায়িত দেহ"], correct: 1,
+        explain: "জীবনের কোনো না কোনো পর্যায়ে এই তিনটি বৈশিষ্ট্য থাকে। 🐟" },
+      { emoji: "🧬", q: "DNA প্রতিলিপিকরণ (replication) কী ধরনের প্রক্রিয়া?",
+        options: ["সংরক্ষণশীল", "অর্ধ-সংরক্ষণশীল (Semi-conservative)", "বিচ্ছুরণশীল", "এলোমেলো"], correct: 1,
+        explain: "মেসেলসন-স্টাল পরীক্ষায় প্রমাণিত — প্রতিটি নতুন DNA-তে একটি পুরনো ও একটি নতুন সূত্র থাকে। 🧬" },
+      { emoji: "🦠", q: "ক্যালভিন চক্র কোথায় সংঘটিত হয়?",
+        options: ["থাইলাকয়েড ঝিল্লিতে", "ক্লোরোপ্লাস্টের স্ট্রোমায়", "মাইটোকন্ড্রিয়ায়", "সাইটোপ্লাজমে"], correct: 1,
+        explain: "অন্ধকার প্রতিক্রিয়া (ক্যালভিন চক্র) স্ট্রোমায় ঘটে। ☀️" }
+    ]
+  };
+
+  const BENGALI_DIGITS = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  const toBn = (num) => String(num).split('').map(d => /\d/.test(d) ? BENGALI_DIGITS[+d] : d).join('');
+
+  // ========== State ==========
+  const state = {
+    level: 'easy',
+    currentIndex: 0,
+    score: 0,
+    questions: [],
+    answered: false,
+    levelLabels: { easy: 'সহজ', medium: 'মাঝারি', hard: 'কঠিন' }
+  };
+
+  // ========== Floating background ==========
+  function createFloatingBg() {
+    const container = document.getElementById('floating-bg');
+    const emojis = ['🔬', '🦠', '🧬', '🧫', '🌱', '🌿'];
+    for (let i = 0; i < 14; i++) {
+      const el = document.createElement('div');
+      el.className = 'float-bg';
+      el.textContent = emojis[i % emojis.length];
+      el.style.fontSize = (28 + Math.random() * 30) + 'px';
+      el.style.left = Math.random() * 95 + '%';
+      el.style.top = Math.random() * 95 + '%';
+      el.style.animationDuration = (15 + Math.random() * 20) + 's';
+      el.style.animationDelay = (Math.random() * 8) + 's';
+      container.appendChild(el);
+    }
+  }
+
+  // ========== Tree progression ==========
+  function getTreeStage(score, total) {
+    const pct = total === 0 ? 0 : score / total;
+    if (pct < 0.34) return '🌱';
+    if (pct < 0.67) return '🌿';
+    return '🌳';
+  }
+
+  // ========== Start quiz ==========
+  function selectLevel(level) {
+    state.level = level;
+    document.querySelectorAll('[data-level]').forEach(btn => {
+      if (btn.dataset.level === level) {
+        btn.style.borderColor = '#2f9e6b';
+        btn.style.background = '#e6f7ee';
+      } else {
+        btn.style.borderColor = '#c8e6d4';
+        btn.style.background = 'white';
+      }
+    });
+  }
+
+  function startQuiz() {
+    state.currentIndex = 0;
+    state.score = 0;
+    state.questions = [...QUESTIONS[state.level]];
+    state.answered = false;
+    document.getElementById('start-screen').classList.add('hidden');
+    document.getElementById('result-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.remove('hidden');
+    renderQuestion();
+  }
+
+  function renderQuestion() {
+    state.answered = false;
+    const q = state.questions[state.currentIndex];
+    const total = state.questions.length;
+
+    // progress
+    document.getElementById('progress-text').textContent = `${toBn(state.currentIndex + 1)} / ${toBn(total)}`;
+    document.getElementById('progress-bar').style.width = ((state.currentIndex) / total * 100) + '%';
+
+    // tree + score
+    document.getElementById('tree-display').textContent = getTreeStage(state.score, total);
+    document.getElementById('score-display').textContent = toBn(state.score);
+
+    // question content
+    const card = document.getElementById('question-card');
+    card.classList.remove('fade-in');
+    void card.offsetWidth;
+    card.classList.add('fade-in');
+
+    document.getElementById('q-emoji').textContent = q.emoji;
+    document.getElementById('q-level-tag').textContent = state.levelLabels[state.level];
+    document.getElementById('question-text').textContent = q.q;
+
+    const optsBox = document.getElementById('options-container');
+    optsBox.innerHTML = '';
+    q.options.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn bg-white rounded-2xl px-5 py-4 text-left font-medium text-base flex items-center gap-3';
+      btn.style.color = '#135a3b';
+      btn.innerHTML = `<span class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0" style="background:#e6f7ee;color:#2f9e6b;">${toBn(i + 1)}</span><span>${opt}</span>`;
+      btn.onclick = () => handleAnswer(i, btn);
+      optsBox.appendChild(btn);
+    });
+
+    document.getElementById('feedback').classList.add('hidden');
+    document.getElementById('next-btn').classList.add('hidden');
+  }
+
+  function handleAnswer(choice, btnEl) {
+    if (state.answered) return;
+    state.answered = true;
+    const q = state.questions[state.currentIndex];
+    const allBtns = document.querySelectorAll('#options-container .option-btn');
+    allBtns.forEach((b, i) => {
+      b.disabled = true;
+      if (i === q.correct) b.classList.add('option-correct');
+      else if (i === choice && i !== q.correct) b.classList.add('option-wrong');
+    });
+
+    const feedback = document.getElementById('feedback');
+    feedback.classList.remove('hidden');
+    if (choice === q.correct) {
+      state.score++;
+      feedback.style.background = '#e6f7ee';
+      feedback.style.color = '#135a3b';
+      feedback.innerHTML = `✅ <strong>দারুণ!</strong> ${q.explain}`;
+
+      // grow tree
+      const tree = document.getElementById('tree-display');
+      tree.textContent = getTreeStage(state.score, state.questions.length);
+      tree.classList.remove('tree-grow');
+      void tree.offsetWidth;
+      tree.classList.add('tree-grow');
+      document.getElementById('score-display').textContent = toBn(state.score);
+    } else {
+      feedback.style.background = '#fde8e8';
+      feedback.style.color = '#8a2a2a';
+      feedback.innerHTML = `❌ <strong>ঠিক হলো না।</strong> ${q.explain}`;
+    }
+
+    const nextBtn = document.getElementById('next-btn');
+    nextBtn.classList.remove('hidden');
+    nextBtn.textContent = state.currentIndex === state.questions.length - 1 ? 'ফলাফল দেখো 🏆' : 'পরবর্তী প্রশ্ন →';
+  }
+
+  function nextQuestion() {
+    if (state.currentIndex === state.questions.length - 1) {
+      showResult();
+    } else {
+      state.currentIndex++;
+      renderQuestion();
+    }
+  }
+
+  // ========== Result + Celebration ==========
+  function showResult() {
+    document.getElementById('quiz-screen').classList.add('hidden');
+    const rs = document.getElementById('result-screen');
+    rs.classList.remove('hidden');
+    rs.classList.add('fade-in');
+
+    const total = state.questions.length;
+    document.getElementById('final-score').textContent = toBn(state.score);
+    document.getElementById('final-total').textContent = toBn(total);
+    document.getElementById('final-tree').textContent = getTreeStage(state.score, total);
+
+    const pct = state.score / total;
+    let msg = '';
+    if (pct === 1) msg = '🏆 নিখুঁত স্কোর! তুমি সত্যিকারের বিজ্ঞানী!';
+    else if (pct >= 0.6) msg = '🌟 চমৎকার! তুমি জীববিজ্ঞানে বেশ পারদর্শী।';
+    else if (pct >= 0.4) msg = '🌿 ভালো চেষ্টা! আরও অনুশীলনে আরও ভালো হবে।';
+    else msg = '🌱 চিন্তা নেই! প্রতিটি বিজ্ঞানীই শুরুতে শেখে। আবার চেষ্টা করো!';
+    document.getElementById('result-feedback').textContent = msg;
+
+    // Falling leaves
+    launchLeaves();
+  }
+
+  function launchLeaves() {
+    const leaves = ['🍃', '🌿', '🍀'];
+    const total = 30;
+    for (let i = 0; i < total; i++) {
+      setTimeout(() => {
+        const leaf = document.createElement('div');
+        leaf.className = 'leaf';
+        leaf.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+        leaf.style.left = Math.random() * 100 + '%';
+        leaf.style.fontSize = (20 + Math.random() * 20) + 'px';
+        leaf.style.animationDuration = (3 + Math.random() * 3) + 's';
+        document.body.appendChild(leaf);
+        setTimeout(() => leaf.remove(), 7000);
+      }, i * 120);
+    }
+  }
+
+  // ========== Event wiring ==========
+  document.querySelectorAll('[data-level]').forEach(btn => {
+    btn.addEventListener('click', () => selectLevel(btn.dataset.level));
+  });
+  document.getElementById('start-btn').addEventListener('click', startQuiz);
+  document.getElementById('next-btn').addEventListener('click', nextQuestion);
+  document.getElementById('retry-btn').addEventListener('click', startQuiz);
+  document.getElementById('home-btn').addEventListener('click', () => {
+    document.getElementById('result-screen').classList.add('hidden');
+    document.getElementById('quiz-screen').classList.add('hidden');
+    document.getElementById('start-screen').classList.remove('hidden');
+  });
+
+  // Initialize
+  createFloatingBg();
+  selectLevel('easy');
+
+  // ========== Element SDK ==========
+  const defaultConfig = {
+    quiz_title: "জুনিয়র বায়োলজিস্ট কুইজ",
+    quiz_subtitle: "কোষ, সালোকসংশ্লেষণ ও প্রাণীজগত — চলো বিজ্ঞানের জগতে যাত্রা শুরু করি 🌿",
+    start_button_text: "কুইজ শুরু করো 🚀",
+    badge_title: "জুনিয়র বায়োলজিস্ট",
+    completion_message: "দারুণ! তুমি কুইজ সম্পন্ন করেছ 🎉",
+    bg_color: "#e6f7ee",
+    surface_color: "#ffffff",
+    text_color: "#135a3b",
+    primary_color: "#2f9e6b",
+    accent_color: "#4cb8d4"
+  };
+
+  function applyConfig(config) {
+    document.getElementById('quiz-title').textContent = config.quiz_title || defaultConfig.quiz_title;
+    document.getElementById('quiz-subtitle').textContent = config.quiz_subtitle || defaultConfig.quiz_subtitle;
+    document.getElementById('start-button-text').textContent = config.start_button_text || defaultConfig.start_button_text;
+    document.getElementById('badge-title').textContent = config.badge_title || defaultConfig.badge_title;
+    document.getElementById('completion-message').textContent = config.completion_message || defaultConfig.completion_message;
+
+    // Apply colors
+    const bg = config.bg_color || defaultConfig.bg_color;
+    const surface = config.surface_color || defaultConfig.surface_color;
+    const text = config.text_color || defaultConfig.text_color;
+    const primary = config.primary_color || defaultConfig.primary_color;
+    const accent = config.accent_color || defaultConfig.accent_color;
+
+    document.body.style.background = `linear-gradient(135deg, ${bg} 0%, ${bg} 40%, ${accent}33 100%)`;
+
+    document.querySelectorAll('.bg-white\\/80').forEach(el => {
+      el.style.background = surface + 'cc';
+    });
+
+    document.querySelectorAll('[style*="color:#135a3b"]').forEach(el => {
+      el.style.color = text;
+    });
+  }
+
+  if (window.elementSdk) {
+    window.elementSdk.init({
+      defaultConfig,
+      onConfigChange: async (config) => { applyConfig(config); },
+      mapToCapabilities: (config) => ({
+        recolorables: [
+          { get: () => config.bg_color || defaultConfig.bg_color,
+            set: (v) => { config.bg_color = v; window.elementSdk.setConfig({ bg_color: v }); } },
+          { get: () => config.surface_color || defaultConfig.surface_color,
+            set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+          { get: () => config.text_color || defaultConfig.text_color,
+            set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+          { get: () => config.primary_color || defaultConfig.primary_color,
+            set: (v) => { config.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+          { get: () => config.accent_color || defaultConfig.accent_color,
+            set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      }),
+      mapToEditPanelValues: (config) => new Map([
+        ["quiz_title", config.quiz_title || defaultConfig.quiz_title],
+        ["quiz_subtitle", config.quiz_subtitle || defaultConfig.quiz_subtitle],
+        ["start_button_text", config.start_button_text || defaultConfig.start_button_text],
+        ["badge_title", config.badge_title || defaultConfig.badge_title],
+        ["completion_message", config.completion_message || defaultConfig.completion_message]
+      ])
+    });
+  }
+
+  lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9f2cd33c36908d38',t:'MTc3NzI4MjQwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
